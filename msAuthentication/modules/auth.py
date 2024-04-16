@@ -21,10 +21,8 @@ def get_token():
             "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
-        print(f"Token gerado para usuário {username}.")
         return jsonify({"token": token}), 200
     else:
-        print(f"Tentativa de login falhou para o usuario {username}.")
         return jsonify({"error": "Credenciais invalidas."}), 400
 
 
@@ -34,7 +32,7 @@ def validate_token():
     token = data.get("token")
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-        return jsonify({"token": {}}), 200
+        return jsonify({"message": "Token válido"}), 200
     except jwt.ExpiredSignatureError:
         return jsonify({"error": "Token expirada."}), 401
     except jwt.InvalidTokenError:
