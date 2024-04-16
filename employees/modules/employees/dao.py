@@ -29,6 +29,19 @@ class DAOEmployees(SQLEmployees):
             return results
         else:
             return None
+
+    def get_employees_by_user_id(self, user_id):
+        query = self._SELECT_ID
+        cursor = self.connection.cursor()
+        cursor.execute(query, (user_id,))
+        results = cursor.fetchall()
+        if results:
+            cols = [desc[0] for desc in cursor.description]
+            results = [dict(zip(cols, i)) for i in results]
+            return results
+        else:
+            return None
+
     def verify_credentials(self, username, password):
         query = self._USERS_VALID
         cursor = self.connection.cursor()
