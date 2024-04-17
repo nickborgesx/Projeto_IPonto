@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify
 import jwt
 import datetime
-from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
+from flask_jwt_extended import jwt_required, verify_jwt_in_request
 
-from iponto.modules.employees.controller import dao_employees
+from iponto.modules.controller import dao_employees
 
 auth_blueprint = Blueprint('auth', __name__)
 

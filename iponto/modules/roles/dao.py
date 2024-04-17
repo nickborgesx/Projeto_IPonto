@@ -9,6 +9,14 @@ class DAORole(SQLRole):
     def create_table(self):
         return self._CREATE_TABLE
 
+    def create_role(self, role:Role):
+        if not isinstance(role, Role):
+            raise Exception('Erro ao criar o role, tipo invalido')
+        query = self._INSERT_ROLE
+        cursor = self.connection.cursor()
+        cursor.execute(query(role.title,))
+        self.connection.commit()
+        return role
     def get_by_id(self, id):
         query = self._SELECT_BY_ID
         cursor = self.connection.cursor()

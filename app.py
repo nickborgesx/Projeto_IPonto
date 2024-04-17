@@ -1,8 +1,7 @@
 from flask import Flask
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager
 from datetime import timedelta
-from iponto.modules.employees.controller import employees_controller
-from iponto.modules.roles.controller import role_controller
+from iponto.modules.controller import employees_controller
 from iponto.service.connect import Connect as EmployeesConnect
 from msAuthentication.modules.auth import auth_blueprint
 from msAuthentication.service.connect import Connect as AuthConnect
@@ -19,7 +18,6 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 
 
 app.register_blueprint(employees_controller)
-app.register_blueprint(role_controller)
 app.register_blueprint(auth_blueprint)
 
 
