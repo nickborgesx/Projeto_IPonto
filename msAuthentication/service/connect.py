@@ -1,17 +1,17 @@
 import psycopg2
+
+
 class Connect:
     def __init__(self):
-        config = dict(dbname="PBD_2024",
+        config = dict(dbname="authentication",
                       user="postgres", password="1532",
                       host="localhost", port="5432")
         self._connection = psycopg2.connect(**config)
 
     def create_table(self):
-        from employees.modules.employees.dao import DAOEmployees
-        from employees.modules.roles.dao import DAORole
+        from msAuthentication.modules.user.dao import DAOUser
         cursor = self._connection.cursor()
-        cursor.execute(DAOEmployees().create_table())
-        cursor.execute(DAORole().create_table())
+        cursor.execute(DAOUser().create_table())
         self._connection.commit()
         cursor.close()
 
