@@ -1,13 +1,13 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request, get_jwt
-from employees.modules.employees.dao import DAOEmployees
-from employees.modules.employees.modelo import Employees
-from employees.modules.roles.dao import DAORole
+from iponto.modules.employees.dao import DAOEmployees
+from iponto.modules.employees.modelo import Employees
+from iponto.modules.roles.dao import DAORole
 import requests
 
 employees_controller = Blueprint('users_controller', __name__)
 dao_employees = DAOEmployees()
-module_name = 'employees'
+module_name = 'iponto'
 
 @employees_controller.route(f'/api/v1/employees/', methods=['GET'])
 @jwt_required()
@@ -43,9 +43,9 @@ def get_employeess():
 #def get_employeesx():
 #    current_user = get_jwt_identity()
 #    dao_employees = DAOEmployees()
-#    employees = dao_employees.get_employees_by_user_id(current_user)
-#    if employees:
-#        employees_data = [{"id": employee.id, "name": employee.name, "role": employee.role} for employee in employees]
+#    iponto = dao_employees.get_employees_by_user_id(current_user)
+#    if iponto:
+#        employees_data = [{"id": employee.id, "name": employee.name, "role": employee.role} for employee in iponto]
 #        return jsonify(response=employees_data), 200
 #    else:
 #        return jsonify({'error': 'Nenhum funcionário encontrado'}), 400

@@ -1,6 +1,6 @@
-from employees.modules.employees.modelo import Employees
-from employees.modules.employees.sql import SQLEmployees
-from employees.service.connect import Connect
+from iponto.modules.employees.modelo import Employees
+from iponto.modules.employees.sql import SQLEmployees
+from iponto.service.connect import Connect
 
 class DAOEmployees(SQLEmployees):
     def __init__(self):

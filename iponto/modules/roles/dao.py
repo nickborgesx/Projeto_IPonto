@@ -1,9 +1,9 @@
-from employees.modules.roles.sql import SQLRole
-from employees.modules.roles.modelo import Role
+from iponto.modules.roles.sql import SQLRole
+from iponto.modules.roles.modelo import Role
 
 class DAORole(SQLRole):
     def __init__(self):
-        from employees.service.connect import Connect
+        from iponto.service.connect import Connect
         self.connection = Connect().get_instance()
 
     def create_table(self):

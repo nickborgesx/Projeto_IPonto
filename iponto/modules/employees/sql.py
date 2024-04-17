@@ -1,5 +1,5 @@
 class SQLEmployees:
-    _TABLE_NAME = 'employees'
+    _TABLE_NAME = 'iponto'
     _COL_ID = 'id'
     _COL_NAME = 'name'
     _COL_USERNAME = 'username'

@@ -1,9 +1,9 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from datetime import timedelta
-from employees.modules.employees.controller import employees_controller
-from employees.modules.roles.controller import role_controller
-from employees.service.connect import Connect as EmployeesConnect
+from iponto.modules.employees.controller import employees_controller
+from iponto.modules.roles.controller import role_controller
+from iponto.service.connect import Connect as EmployeesConnect
 from msAuthentication.modules.auth import auth_blueprint
 from msAuthentication.service.connect import Connect as AuthConnect
 

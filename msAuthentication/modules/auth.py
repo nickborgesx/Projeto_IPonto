@@ -3,7 +3,7 @@ import jwt
 import datetime
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 
-from employees.modules.employees.controller import dao_employees
+from iponto.modules.employees.controller import dao_employees
 
 auth_blueprint = Blueprint('auth', __name__)
 

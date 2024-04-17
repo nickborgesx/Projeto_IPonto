@@ -7,8 +7,8 @@ class Connect:
         self._connection = psycopg2.connect(**config)
 
     def create_table(self):
-        from employees.modules.employees.dao import DAOEmployees
-        from employees.modules.roles.dao import DAORole
+        from iponto.modules.employees.dao import DAOEmployees
+        from iponto.modules.roles.dao import DAORole
         cursor = self._connection.cursor()
         cursor.execute(DAOEmployees().create_table())
         cursor.execute(DAORole().create_table())
