@@ -1,21 +1,21 @@
 from flask import Blueprint, request, jsonify
-import jwt
-import datetime
-from flask_jwt_extended import jwt_required, verify_jwt_in_request
+import datetime,jwt
+from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
+from msAuthentication.modules.user.dao import DAOUser
 
-from iponto.modules.controller import dao_employees
-
-auth_blueprint = Blueprint('auth', __name__)
+user_controller = Blueprint('user_controller', __name__)
+dao_user = DAOUser()
+module_name = 'user'
 
 SECRET_KEY = 'chave_secreta'
 
-@auth_blueprint.route("/api/v1/authentication/token/", methods=["POST"])
+@user_controller.route("/api/v1/authentication/token/", methods=["POST"])
 def get_token():
     data = request.get_json()
     username = data.get("username")
     password = data.get("password")
 
-    if dao_employees.verify_credentials(username, password):
+    if dao_user.verify_credentials(username, password):
         payload = {
             "sub": username,
             "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)
@@ -26,7 +26,7 @@ def get_token():
         return jsonify({"error": "Credenciais invalidas."}), 400
 
 
-@auth_blueprint.route("/api/v1/authentication/validation/", methods=["POST"])
+@user_controller.route("/api/v1/authentication/validation/", methods=["POST"])
 def validate_token():
     data = request.get_json()
     token = data.get("token")

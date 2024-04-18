@@ -1,11 +1,10 @@
 from iponto.modules.roles.sql import SQLRole
 from iponto.modules.roles.modelo import Role
+from msAuthentication.service.connect import Connect
 
 class DAORole(SQLRole):
     def __init__(self):
-        from iponto.service.connect import Connect
         self.connection = Connect().get_instance()
-
     def create_table(self):
         return self._CREATE_TABLE
 
@@ -17,6 +16,7 @@ class DAORole(SQLRole):
         cursor.execute(query(role.title,))
         self.connection.commit()
         return role
+
     def get_by_id(self, id):
         query = self._SELECT_BY_ID
         cursor = self.connection.cursor()
