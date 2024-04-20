@@ -21,3 +21,6 @@ class SQLEmployees:
     # _USERS_VALID = f"SELECT * FROM {_TABLE_NAME} WHERE {_COL_USERNAME} = %s AND {_COL_PASSWORD} = %s;"
     # _SELECT_USER_NAME = f"SELECT * FROM {_TABLE_NAME} WHERE {_COL_NAME} ILIKE %s"
     # _SELECT_ID = f"SELECT id, name, role FROM {_TABLE_NAME} WHERE id = %s"
+    @property
+    def CREATE_TABLE(self):
+        return self._CREATE_TABLE

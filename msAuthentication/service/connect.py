@@ -1,11 +1,12 @@
 import psycopg2
+from msAuthentication.modules.user.sql import SQLUser
 
 
 class Connect:
     def __init__(self):
         config = dict(dbname="authentication",
                       user="postgres",
-                      # password="redgaw",
+                      #password="redgaw",
                       password="1532",
                       host="localhost", port="5432")
         self._connection = psycopg2.connect(**config)
@@ -20,11 +21,9 @@ class Connect:
     def get_instance(self):
         return self._connection
 
-    def init_database(self, version='v1'):
-        if version == 'v1':
-            self.create_table()
-        if version == 'v2':
-            self.update_database()
+    def init_database(self):
+        cursor = self._connection.cursor()
+        cursor.execute(SQLUser._CREATE_TABLE)
+        self._connection.commit()
+        cursor.close()
 
-    def update_database(self):
-        pass

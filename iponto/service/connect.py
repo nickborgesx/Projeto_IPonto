@@ -1,4 +1,7 @@
 import psycopg2
+from iponto.modules.employees.sql import SQLEmployees
+from iponto.modules.roles.sql import SQLRole
+
 
 class Connect:
     def __init__(self):
@@ -21,11 +24,10 @@ class Connect:
     def get_instance(self):
         return self._connection
 
-    def init_database(self, version='v1'):
-        if version == 'v1':
-            self.create_table()
-        if version == 'v2':
-            self.update_database()
+    def init_database(self):
+       cursor = self._connection.cursor()
+       cursor.execute(SQLEmployees().CREATE_TABLE)
+       cursor.execute(SQLRole().CREATE_TABLE)
+       self._connection.commit()
+       cursor.close()
 
-    def update_database(self):
-        pass
