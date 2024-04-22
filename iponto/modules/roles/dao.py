@@ -28,3 +28,15 @@ class DAORole(SQLRole):
             return Role(**quarto_dict)
         else:
             return None
+
+    def get_by_title(self, title):
+        query = self._SELECT_BY_TITLE
+        cursor = self.connection.cursor()
+        cursor.execute(query, (title,))
+        result = cursor.fetchone()
+        if result:
+            cols = [desc[0] for desc in cursor.description]
+            quarto_dict = dict(zip(cols, result))
+            return Role(**quarto_dict)
+        else:
+            return None

@@ -29,4 +29,16 @@ class DAOEmployees(SQLEmployees):
         results = [Employees(**i) for i in results]
         return results
 
+    def get_by_cpf(self, cpf):
+        query = self._SELECT_BY_CPF
+        cursor = self.connection.cursor()
+        cursor.execute(query, (cpf))
+        results = cursor.fetchall()
+        if results:
+            cols = [desc[0] for desc in cursor.description ]
+            results = [dict(zip(cols,i)) for i in results]
+            results = [Employees(**i) for i in results]
+            return results
+        else:
+            return None
 
