@@ -10,12 +10,12 @@ class DAOEmployees(SQLEmployees):
     def create_table(self):
         return self._CREATE_TABLE
 
-    def salvar(self, employees:Employees):
-        if not isinstance(Employees, Employees):
-            raise Exception("Erro ao salvar tipo invalido")
+    def salvar(self, employees: Employees):
+        if not isinstance(employees, Employees):
+            raise Exception("Erro ao salvar tipo inválido")
         query = self._INSERT_INTO
         cursor = self.connection.cursor()
-        cursor.execute(query,(employees.name, employees.cpf, employees.roles_id))
+        cursor.execute(query, (employees.name, employees.cpf, employees.roles_id))
         self.connection.commit()
         return employees
 
@@ -32,7 +32,7 @@ class DAOEmployees(SQLEmployees):
     def get_by_cpf(self, cpf):
         query = self._SELECT_BY_CPF
         cursor = self.connection.cursor()
-        cursor.execute(query, (cpf))
+        cursor.execute(query, (cpf,))
         results = cursor.fetchall()
         if results:
             cols = [desc[0] for desc in cursor.description ]

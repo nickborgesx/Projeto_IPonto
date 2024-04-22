@@ -26,30 +26,27 @@ def employees():
     else:
         return make_response(response.json(), response.status_code)
 
-@employees_controller.route(f'/api/v1/employee/', methods=['POST'])
-@jwt_required()
+@employees_controller.route('/api/v1/employee/', methods=['POST'])
 def create_employee():
-    employee = request.json
-    erros = []
-    for data in employee:
-        for campo in SQLEmployees._CAMPOS_OBRIGATORIOS:
-            if campo not in data.keys() or not data.get(campo, '').strip():
-                erros.append(f'O campo {campo} é pbrigatório!')
-            if not data.get('cpf', '').strip():
-                erros.append(f'O campo cpf é obrigatorio')
-        if dao_employees.get_by_cpf(data.get('cpf')):
-            erros.append(f'Já existe um funcionário com esse documento')
-        if erros:
-            response = jsonify({'error': erros})
-            response.status_code = 400
-            return response
-        title = data.get('titulo')
-        isTitle = DAORole.get_by_title(title)
-        if not isTitle:
-            response = jsonify({'error': 'Não existe esse cargo no sistema'})
-            response.status_code = 400
-            return response
-        employee_dado = Employees(**data)
-        id = dao_employees.salvar(employee_dado)
-    response = jsonify({'id': id })
+    data = request.json
+    errors = []
+    required_fields = ['nome', 'cpf', 'roles_id']
+    for field in required_fields:
+        if field not in data or not data[field].strip():
+            errors.append(f'O campo {field} é obrigatório!')
+    if dao_employees.get_by_cpf(data.get('cpf')):
+        errors.append('Já existe um funcionário com esse documento!')
+    title = data.get('roles_id')
+    if not DAORole.get_by_title(title): #Erro acontece exatamente nessa parte
+        errors.append('Não existe esse cargo no sistema!')
+    if errors:
+        response = jsonify({'errors': errors})
+        response.status_code = 400
+        return response
+    employee_data = Employees(**data)
+    employee_id = dao_employees.salvar(employee_data)
+    response = jsonify({'id': employee_id})
     response.status_code = 200
+    return response
+
+

@@ -26,8 +26,8 @@ class Connect:
 
     def init_database(self):
        cursor = self._connection.cursor()
-       cursor.execute(SQLEmployees().CREATE_TABLE)
-       cursor.execute(SQLRole().CREATE_TABLE)
+       cursor.execute(SQLRole._CREATE_TABLE)
+       cursor.execute(SQLEmployees._CREATE_TABLE)
        self._connection.commit()
        cursor.close()
 

@@ -24,8 +24,8 @@ class DAORole(SQLRole):
         result = cursor.fetchone()
         if result:
             cols = [desc[0] for desc in cursor.description]
-            quarto_dict = dict(zip(cols, result))
-            return Role(**quarto_dict)
+            role_dict = dict(zip(cols, result))
+            return Role(**role_dict)
         else:
             return None
 
