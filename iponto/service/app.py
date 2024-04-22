@@ -8,6 +8,10 @@ from iponto.service.connect import Connect
 app = Flask(__name__)
 Connect().init_database()
 
+app.config['JWT_TOKEN_LOCATION'] = ['headers']
+app.config['JWT_HEADER_NAME'] = 'Authorization'
+app.config['JWT_HEADER_TYPE'] = 'Bearer'
+
 app.register_blueprint(roles_controller)
 app.register_blueprint(employees_controller)
 

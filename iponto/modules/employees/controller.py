@@ -1,4 +1,5 @@
-from flask import Blueprint, request, jsonify
+import requests
+from flask import Blueprint, request, jsonify, make_response
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request, get_jwt
 from iponto.modules.employees.dao import DAOEmployees
 from iponto.modules.employees.modelo import Employees
@@ -11,32 +12,19 @@ module_name = 'employees'
 
 @employees_controller.route(f'/api/v1/employees/', methods=['GET'])
 @jwt_required()
-def get_employeess():
-    try:
-        verify_jwt_in_request()
-        current_user = get_jwt_identity()
-        dao_employees = DAOEmployees()
-        query = f"{DAOEmployees._SELECT_ALL} WHERE {DAOEmployees._COL_USERNAME} = %s"
-        params = (current_user,)
-        with dao_employees.connection.cursor() as cursor:
-            cursor.execute(query, params)
-            results = cursor.fetchall()
-            cols = [desc[0] for desc in cursor.description]
-            employeess = [Employees(**dict(zip(cols, i))) for i in results]
-            for employee in employeess:
-                roles = DAORole().get_by_id(employee.roles_id)
-                if roles:
-                    employee.roles_id = roles.__dict__
-            results = [{"id": employee.id, "name": employee.name, "role": employee.roles_id} for employee in employeess]
-            if results:
-                response = jsonify(response=results)
-                response.status_code = 200
-            else:
-                response = jsonify({'error': 'Nenhum funcionário encontrado.'})
-                response.status_code = 400
-            return response
-    except Exception as e:
-        return jsonify({'error': 'Token inválido'}), 400
+def employees():
+    token = request.headers.get('Authorization')
+    payload = {
+        "token": token
+    }
+    response = requests.post(url='http://localhost:5000/api/v1/authentication/validation/', json=payload)
+    if response.status_code == 200:
+        employees = DAOEmployees.get_all_employees()
+        return jsonify({"response": employees})
+    elif response.status_code == 401:
+        return make_response(jsonify({'error': 'Usuário não autorizado'}), 401)
+    else:
+        return make_response(response.json(), response.status_code)
 
 @employees_controller.route(f'/api/v1/employee/', methods=['POST'])
 @jwt_required()

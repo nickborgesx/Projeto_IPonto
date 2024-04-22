@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-import datetime,jwt
+import datetime, jwt
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 from msAuthentication.modules.user.dao import DAOUser
 
@@ -25,7 +25,6 @@ def get_token():
     else:
         return jsonify({"error": "Credenciais invalidas."}), 400
 
-
 @user_controller.route("/api/v1/authentication/validation/", methods=["POST"])
 def validate_token():
     data = request.get_json()
@@ -37,6 +36,9 @@ def validate_token():
         return jsonify({"error": "Token expirada."}), 401
     except jwt.InvalidTokenError:
         return jsonify({"error": "Token invalida."}), 400
+
+@user_controller.route("/api/v1/authentication/check/", methods=["GET"])
 @jwt_required()
 def check_token():
     verify_jwt_in_request()
+    return jsonify({"message": "Token válido"}), 200
