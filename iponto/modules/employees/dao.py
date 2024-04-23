@@ -11,11 +11,11 @@ class DAOEmployees(SQLEmployees):
         return self._CREATE_TABLE
 
     def salvar(self, employees: Employees):
-        if not isinstance(employees, Employees):
-            raise Exception("Erro ao salvar tipo inválido")
         query = self._INSERT_INTO
         cursor = self.connection.cursor()
         cursor.execute(query, (employees.name, employees.cpf, employees.roles_id))
+        employee_id = cursor.fetchone()[0]
+        employees.id = employee_id
         self.connection.commit()
         return employees
 

@@ -14,7 +14,3 @@ class SQLUser:
     _USERS_VALID = f"SELECT * FROM {_TABLE_NAME} WHERE {_COL_USERNAME} = %s AND {_COL_PASSWORD} = %s"
     _PASS_VALID = f'SELECT * from {_TABLE_NAME} WHERE {_COL_PASSWORD} = %s'
     _USER_NAME = f'SELECT * from {_TABLE_NAME} WHERE {_COL_USERNAME} = %s'
-
-    @property
-    def CREATE_TABLE(self):
-        return self._CREATE_TABLE

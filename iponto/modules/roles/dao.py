@@ -1,6 +1,6 @@
 from iponto.modules.roles.sql import SQLRoles
 from iponto.modules.roles.modelo import Roles
-from msAuthentication.service.connect import Connect
+from iponto.service.connect import Connect
 
 class DAORoles(SQLRoles):
     def __init__(self):

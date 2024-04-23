@@ -8,23 +8,47 @@ from iponto.modules.roles.dao import DAORoles
 
 employees_controller = Blueprint('employees_controller', __name__)
 dao_employees = DAOEmployees()
-dao_roles = DAORoles
+dao_roles = DAORoles()
 module_name = 'employees'
 SECRET_KEY = 'chave_secreta'
-@employees_controller.route(f'/api/v1/employees/', methods=['GET'])
-def get_employees():
-    payload = {
-        "authorization": flask_request.headers.get('authorization')
-    }
-    response = requests.post(url='http://localhost:5000/api/v1/authorization/validation/', data=payload)
 
-    if response.status_code == 200:
-        func = DAOEmployees().get_all_employees()
-        return jsonify({"response": func})
-    elif response.status_code == 401:
-        return make_response(jsonify({'erro': 'Usuário não autorizado'}), 401)
+@employees_controller.route('/api/v1/employees/', methods=['GET'])
+def get_employees():
+    token = flask_request.headers.get('Authorization')
+    auth_response = validate_token(token)
+
+    if auth_response.status_code == 200:
+        employees = dao_employees.get_all_employees()
+        employees_data = []
+        for employee in employees:
+            employee_data = {
+                "id": employee.id,
+                "name": employee.name,
+                "cpf": employee.cpf,
+                "role": None
+            }
+            role = dao_roles.get_by_id(employee.roles_id)
+            if role:
+                employee_data["role"] = {
+                    "id": role.id,
+                    "title": role.title
+                }
+
+            employees_data.append(employee_data)
+        return jsonify({"employees": employees_data}), 200
+    elif auth_response.status_code == 401:
+        return make_response(jsonify({'error': 'Token de autenticação inválido'}), 401)
     else:
-        return make_response(response.json(), response.status_code)
+        return make_response(auth_response.text, auth_response.status_code)
+
+
+def validate_token(token):
+    headers = {
+        'Authorization': token
+    }
+    response = requests.post('http://127.0.0.1:5000/api/v1/authentication/validation/', headers=headers)
+    return response
+
 
 @employees_controller.route(f'/api/v1/employee/', methods=['POST'])
 def create_employee():
@@ -47,18 +71,17 @@ def create_employee():
         return response
 
     role_id = employee_data.get('roles_id')
-    if not dao_roles().get_by_id(role_id):
+    if not dao_roles.get_by_id(role_id):
         response = jsonify({'error': f'Não existe o cargo com ID {role_id} no sistema'})
         response.status_code = 400
         return response
 
-    employee = Employees(**employee_data)
-    employee_id = dao_employees.salvar(employee)
-
-    response_data = {'id': employee_id, 'name': employee_data['name']}
-    response = jsonify(response_data)
-    response.status_code = 200
+    new_employee = Employees(
+        name=employee_data.get('name'),
+        cpf=employee_data.get('cpf'),
+        roles_id=role_id
+    )
+    saved_employee = dao_employees.salvar(new_employee)
+    response = jsonify({'id': saved_employee.id})
+    response.status_code = 201
     return response
-
-
-
