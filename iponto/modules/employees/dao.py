@@ -42,3 +42,9 @@ class DAOEmployees(SQLEmployees):
         else:
             return None
 
+    def get_cpf(self, username):
+        query = self._SELECT_BY_CPF
+        cursor = self.connection.cursor()
+        cursor.execute(query, (username,))
+        return cursor.fetchone() is not None
+

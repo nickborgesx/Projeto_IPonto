@@ -12,6 +12,8 @@ class SQLUser:
     _SELECT_ALL = f"SELECT * from {_TABLE_NAME}"
     _SELECT_BY_ID = f'SELECT * from {_TABLE_NAME} WHERE {_COL_ID} = %s'
     _USERS_VALID = f"SELECT * FROM {_TABLE_NAME} WHERE {_COL_USERNAME} = %s AND {_COL_PASSWORD} = %s"
+    _PASS_VALID = f'SELECT * from {_TABLE_NAME} WHERE {_COL_PASSWORD} = %s'
+    _USER_NAME = f'SELECT * from {_TABLE_NAME} WHERE {_COL_USERNAME} = %s'
 
     @property
     def CREATE_TABLE(self):

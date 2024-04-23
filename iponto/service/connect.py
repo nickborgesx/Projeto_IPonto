@@ -1,6 +1,6 @@
 import psycopg2
 from iponto.modules.employees.sql import SQLEmployees
-from iponto.modules.roles.sql import SQLRole
+from iponto.modules.roles.sql import SQLRoles
 
 
 class Connect:
@@ -14,9 +14,9 @@ class Connect:
 
     def create_table(self):
         from iponto.modules.employees.dao import DAOEmployees
-        from iponto.modules.roles.dao import DAORole
+        from iponto.modules.roles.dao import DAORoles
         cursor = self._connection.cursor()
-        cursor.execute(DAORole().create_table())
+        cursor.execute(DAORoles().create_table())
         cursor.execute(DAOEmployees().create_table())
         self._connection.commit()
         cursor.close()
@@ -25,9 +25,8 @@ class Connect:
         return self._connection
 
     def init_database(self):
-       cursor = self._connection.cursor()
-       cursor.execute(SQLRole._CREATE_TABLE)
-       cursor.execute(SQLEmployees._CREATE_TABLE)
-       self._connection.commit()
-       cursor.close()
-
+        cursor = self._connection.cursor()
+        cursor.execute(SQLRoles._CREATE_TABLE)
+        cursor.execute(SQLEmployees._CREATE_TABLE)
+        self._connection.commit()
+        cursor.close()

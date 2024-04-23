@@ -1,3 +1,4 @@
+from msAuthentication.modules.user.modelo import User
 from msAuthentication.modules.user.sql import SQLUser
 from msAuthentication.service.connect import Connect
 
@@ -13,6 +14,21 @@ class DAOUser(SQLUser):
         query = self._USERS_VALID
         cursor = self.connection.cursor()
         cursor.execute(query, (username, password))
-        result = cursor.fetchone()
+        user_data = cursor.fetchone()
         cursor.close()
-        return result is not None
+        if user_data:
+            return User(*user_data)
+        else:
+            return None
+
+    def verify_password(self, password):
+        query = self._PASS_VALID
+        cursor = self.connection.cursor()
+        cursor.execute(query, (password,))
+        return cursor.fetchone() is not None
+
+    def user_name(self, username):
+        query = self._USER_NAME
+        cursor = self.connection.cursor()
+        cursor.execute(query, (username,))
+        return cursor.fetchone() is not None

@@ -1,4 +1,4 @@
-class Employees():
+class Employees:
     def __init__(self, name, cpf, roles_id, id=None):
         self.id = id
         self.name = name
