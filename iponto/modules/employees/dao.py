@@ -13,7 +13,7 @@ class DAOEmployees(SQLEmployees):
     def salvar(self, employees: Employees):
         query = self._INSERT_INTO
         cursor = self.connection.cursor()
-        cursor.execute(query, (employees.name, employees.cpf, employees.roles_id))
+        cursor.execute(query, (employees.name, employees.cpf, employees.roles_id, employees.company_id))
         employee_id = cursor.fetchone()[0]
         employees.id = employee_id
         self.connection.commit()
@@ -41,10 +41,4 @@ class DAOEmployees(SQLEmployees):
             return results
         else:
             return None
-
-    def get_cpf(self, username):
-        query = self._SELECT_BY_CPF
-        cursor = self.connection.cursor()
-        cursor.execute(query, (username,))
-        return cursor.fetchone() is not None
 
