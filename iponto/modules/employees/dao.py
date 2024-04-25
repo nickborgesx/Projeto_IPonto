@@ -42,3 +42,21 @@ class DAOEmployees(SQLEmployees):
         else:
             return None
 
+    def get_id_by_cpf(self, cpf):
+        query = self._SELECT_ID_BY_CPF
+        cursor = self.connection.cursor()
+        cursor.execute(query, (cpf,))
+        results = cursor.fetchone()
+        if results:
+            return results[0]
+        else:
+            return None
+    def update_employees(self, employees: Employees):
+        if not isinstance(employees, Employees):
+            raise Exception('Tipo invalido')
+        query = self._UPDATE_EMPLOYEE
+        cursor = self.connection.cursor()
+        cursor.execute(query,(employees.id, employees.name, employees.cpf, employees.roles_id, employees.company_id))
+        self.connection.commit()
+        return employees
+

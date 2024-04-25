@@ -4,7 +4,7 @@ class Employees:
         self.name = name
         self.cpf = cpf
         self.roles_id = roles_id
-<<<<<<< Updated upstream
+        self.company_id = company_id
 
     def to_json(self):
         return {
@@ -13,6 +13,3 @@ class Employees:
             'cpf': self.cpf,
             'roles_id': self.roles_id
         }
-=======
-        self.company_id = company_id
->>>>>>> Stashed changes

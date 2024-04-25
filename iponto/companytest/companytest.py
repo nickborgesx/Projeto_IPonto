@@ -69,6 +69,7 @@ def criar_funcionario():
 @app.route('/api/v1/employee/<int:id>/', methods=['PUT'])
 @jwt_required()
 def editar_funcionario(id):
+
     data = request.json
     name = data.get('name')
     role_id = data.get('role_id')
