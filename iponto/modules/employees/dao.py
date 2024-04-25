@@ -51,12 +51,26 @@ class DAOEmployees(SQLEmployees):
             return results[0]
         else:
             return None
+
     def update_employees(self, employees: Employees):
         if not isinstance(employees, Employees):
-            raise Exception('Tipo invalido')
+            raise Exception('Tipo inválido')
         query = self._UPDATE_EMPLOYEE
         cursor = self.connection.cursor()
-        cursor.execute(query,(employees.id, employees.name, employees.cpf, employees.roles_id, employees.company_id))
+        cursor.execute(query, (employees.name, employees.cpf, employees.roles_id, employees.company_id, employees.id))
         self.connection.commit()
         return employees
+
+    def get_by_id(self, id):
+        query = self._SELECT_BY_ID
+        cursor = self.connection.cursor()
+        cursor.execute(query, (id,))
+        results = cursor.fetchone()
+        if results:
+            cols = [desc[0] for desc in cursor.description]
+            employees_dict = dict(zip(cols, results))
+            return Employees(**employees_dict)
+        else:
+            return None
+
 

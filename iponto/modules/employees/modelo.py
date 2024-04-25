@@ -11,5 +11,6 @@ class Employees:
             'id': self.id,
             'name': self.name,
             'cpf': self.cpf,
-            'roles_id': self.roles_id
+            'roles_id': self.roles_id,
+            'company_id': self.company_id
         }
