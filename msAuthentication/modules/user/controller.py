@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, make_response
-import requests, jwt
+import jwt
 from msAuthentication.modules.user.dao import DAOUser
 from msAuthentication.modules.user.modelo import User
 

@@ -148,6 +148,12 @@ def editar_funcionario(id):
             response.status_code = 400
             return response
 
+        if employee.name == "":
+            response = jsonify({'error': f'Nome não inserido'})
+            response.status_code = 400
+            return response
+
+
         if employee.cpf != "":
             old_employee = dao_employees.get_by_cpf(employee.cpf)
             if old_employee != None:
