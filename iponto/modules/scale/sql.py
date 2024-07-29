@@ -35,4 +35,4 @@ class SQLScale:
                     f'{_COL_NIGHT_BREAK}, {_COL_INPUT1}, {_COL_EXIT1}, {_COL_INPUT2}, {_COL_EXIT2}, {_COL_EMPLOYEE_ID}) '
                     f'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING {_COL_ID};')
     _SELECT_ALL = f'SELECT * FROM {_TABLE_NAME}'
-    _SELECT_BY_EMPLOYEE_AND_DATE = f'SELECT * FROM {_TABLE_NAME} WHERE {_COL_EMPLOYEE_ID} = %s AND {_COL_MONTH} = %s AND {_COL_YEAR} = %s'
+    _SELECT_BY_EMPLOYEE_AND_DATE = f'SELECT * FROM {_TABLE_NAME} WHERE {_COL_EMPLOYEE_ID} = %s AND {_COL_DATE} = %s'

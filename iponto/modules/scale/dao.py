@@ -9,6 +9,9 @@ class DAOScale(SQLScale):
     def create_table(self):
         return self._CREATE_TABLE
 
+    def create_table(self):
+        return self._CREATE_TABLE
+
     def salvar(self, scale: Scale):
         query = (f'INSERT INTO {SQLScale._TABLE_NAME} '
                  f'({SQLScale._COL_TYPE}, {SQLScale._COL_MONTH}, {SQLScale._COL_YEAR}, '
@@ -29,10 +32,10 @@ class DAOScale(SQLScale):
         self.connection.commit()
         return scale
 
-    def get_by_employee_and_date(self, employee_id, month, year):
+    def get_by_employee_and_date(self, employee_id, date):
         query = self._SELECT_BY_EMPLOYEE_AND_DATE
         cursor = self.connection.cursor()
-        cursor.execute(query, (employee_id, month, year))
+        cursor.execute(query, (employee_id, date))
         result = cursor.fetchone()
         if result:
             cols = [desc[0] for desc in cursor.description]
