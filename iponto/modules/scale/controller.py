@@ -32,6 +32,7 @@ def generate_work_days(year, month):
 def create_scale():
     token = request.headers.get('Authorization')
     auth_response = validate_token(token)
+
     if auth_response.status_code == 200:
         scale_data = request.json
         errors = []
@@ -53,22 +54,22 @@ def create_scale():
 
         month = scale_data.get('month')
         year = scale_data.get('year')
-
         created_ids = set()
         existing_ids = []
         invalid_ids = []
-
         valid_employee_ids = []
+
         for employee_id in employee_ids:
             if dao_employees.get_by_id(employee_id):
                 valid_employee_ids.append(employee_id)
             else:
-                invalid_ids.append(employee_id)
+                pass
 
-        if invalid_ids:
-            return make_response('id invalid', 400)
+        if not valid_employee_ids:
+            return make_response('No valid employee IDs', 400)
 
         work_days = generate_work_days(year, month)
+
         for employee_id in valid_employee_ids:
             for day in work_days:
                 date = day.strftime('%Y-%m-%d')
