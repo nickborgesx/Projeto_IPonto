@@ -1,4 +1,5 @@
 import requests
+from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify, make_response
 from flask import request as flask_request
 from iponto.modules.company.dao import DAOCompany
@@ -6,6 +7,8 @@ from iponto.modules.employees.dao import DAOEmployees
 from iponto.modules.employees.modelo import Employees
 from iponto.modules.employees.sql import SQLEmployees
 from iponto.modules.roles.dao import DAORoles
+from iponto.modules.scale.controller import dao_scale
+from iponto.modules.scale.dao import DAOScale
 
 employees_controller = Blueprint('employees_controller', __name__)
 dao_employees = DAOEmployees()
@@ -167,3 +170,49 @@ def editar_funcionario(id):
         return jsonify({'error': 'Token de autenticação inválido'}), 401
     else:
         return make_response(auth_response.text, auth_response.status_code)
+
+INTERVALO = True
+@employees_controller.route('/api/v1/employee/<int:id>/point', methods=['POST'])
+def bater_ponto(id):
+    token = request.headers.get('Authorization')
+    auth_response = validate_token(token)
+
+    if auth_response.status_code == 200:
+        today_date = datetime.now().strftime('%Y-%m-%d')
+
+        employee = dao_employees.get_by_id(id)
+        if not employee:
+            return make_response({'error': f'Funcionário com ID {id} não encontrado'}, 404)
+
+        escala = dao_scale.get_by_employee_and_date(id, today_date)
+        if not escala:
+            return make_response({'error': 'Escala não encontrada para hoje'}, 404)
+
+        pontos = [escala.input1, escala.output1, escala.input2, escala.output2]
+        pontos_batidos = sum(1 for p in pontos if p is not None)
+
+        if pontos_batidos >= 4:
+            return make_response({'error': 'Limite do dia já atingido'}, 400)
+
+        now = datetime.now().strftime('%H:%M')
+
+        if INTERVALO:
+            ultimo_ponto = max([p for p in pontos if p is not None], default=None)
+            if ultimo_ponto:
+                ultimo_ponto_time = datetime.strptime(ultimo_ponto, '%H:%M')
+                agora_time = datetime.strptime(now, '%H:%M')
+                intervalo = agora_time - ultimo_ponto_time
+                if intervalo < timedelta(hours=2):
+                    return make_response({'error': 'Você não pode bate o ponto nesse momento, precisa de um intervalo de 2h entre os pontos'}, 400)
+
+        dao_scale.atualizar_ponto(escala, now)
+        dao_scale.salvar(escala)
+
+        return make_response({'message': 'Ponto registrado'}, 200)
+
+    elif auth_response.status_code == 401:
+        return make_response({'error': 'Token de autenticação inválido'}, 401)
+    else:
+        return make_response(auth_response.text, auth_response.status_code)
+
+

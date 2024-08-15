@@ -10,9 +10,9 @@ class SQLScale:
     _COL_NIGHT_BREAK = 'night_break'
     _COL_EMPLOYEE_ID = 'employee_id'
     _COL_INPUT1 = 'input1'
-    _COL_EXIT1 = 'exit1'
+    _COL_OUTPUT1 = 'output1'
     _COL_INPUT2 = 'input2'
-    _COL_EXIT2 = 'exit2'
+    _COL_OUTPUT2 = 'output2'
     _CAMPOS_OBRIGATORIOS = [_COL_TYPE, _COL_MONTH, _COL_YEAR, _COL_EMPLOYEE_ID]
 
     _CREATE_TABLE = (f'CREATE TABLE IF NOT EXISTS {_TABLE_NAME} '
@@ -25,14 +25,14 @@ class SQLScale:
                      f'{_COL_AFTERNOON_BREAK} VARCHAR(255), '
                      f'{_COL_NIGHT_BREAK} VARCHAR(255), '
                      f'{_COL_INPUT1} VARCHAR(255), '
-                     f'{_COL_EXIT1} VARCHAR(255), '
+                     f'{_COL_OUTPUT1} VARCHAR(255), '
                      f'{_COL_INPUT2} VARCHAR(255), '
-                     f'{_COL_EXIT2} VARCHAR(255), '
+                     f'{_COL_OUTPUT2} VARCHAR(255), '
                      f'{_COL_EMPLOYEE_ID} INT REFERENCES employee({_COL_ID}));')
 
     _INSERT_INTO = (f'INSERT INTO {_TABLE_NAME} '
                     f'({{{_COL_TYPE},{_COL_DATE}, {_COL_MONTH}, {_COL_YEAR}, {_COL_MORNING_BREAK}, {_COL_AFTERNOON_BREAK}, '
-                    f'{_COL_NIGHT_BREAK}, {_COL_INPUT1}, {_COL_EXIT1}, {_COL_INPUT2}, {_COL_EXIT2}, {_COL_EMPLOYEE_ID}) '
+                    f'{_COL_NIGHT_BREAK}, {_COL_INPUT1}, {_COL_OUTPUT1}, {_COL_INPUT2}, {_COL_OUTPUT2}, {_COL_EMPLOYEE_ID}) '
                     f'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING {_COL_ID};')
     _SELECT_ALL = f'SELECT * FROM {_TABLE_NAME}'
     _SELECT_BY_EMPLOYEE_AND_DATE = f'SELECT * FROM {_TABLE_NAME} WHERE {_COL_EMPLOYEE_ID} = %s AND {_COL_DATE} = %s'

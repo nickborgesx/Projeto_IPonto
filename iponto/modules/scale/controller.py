@@ -88,14 +88,14 @@ def create_scale():
                     night_break='19-23',
                     employee_id=employee_id,
                     input1=None,
-                    exit1=None,
+                    output1=None,
                     input2=None,
-                    exit2=None
+                    output2=None
                 )
                 saved_scale = dao_scale.salvar(new_scale)
                 created_ids.add(employee_id)
 
-        return make_response('êxito', 201)
+        return make_response('Êxito', 201)
 
     elif auth_response.status_code == 401:
         return make_response('error', 401)
