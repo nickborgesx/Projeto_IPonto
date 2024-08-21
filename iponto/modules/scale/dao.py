@@ -76,3 +76,44 @@ class DAOScale(SQLScale):
             escala.input2 = horario
         elif escala.output2 is None:
             escala.output2 = horario
+
+    def get_data_by_data_and_id(self, employee_id, date):
+        query = self._SELECT_BY_DATE_AND_EMPLOYEE_ID
+        cursor = self.connection.cursor()
+        cursor.execute(query, (date,employee_id))
+        result = cursor.fetchone()
+        if result:
+            cols = [desc[0] for desc in cursor.description]
+            scale_dict = dict(zip(cols, result))
+            # return Scale(**scale_dict)
+            return scale_dict
+        else:
+            return None
+
+    def update_input1(self, input1, data, employee_id):
+        query = self._UPDATE_INPUT1
+        cursor = self.connection.cursor()
+        cursor.execute(query, (input1, data, employee_id,))
+        self.connection.commit()
+        return f'sucesso {input1}'
+
+    def update_exit1(self, exit1, data, employee_id):
+        query = self._UPDATE_EXIT1
+        cursor = self.connection.cursor()
+        cursor.execute(query, (exit1, data, employee_id,))
+        self.connection.commit()
+        return f'sucesso {exit1}'
+
+    def update_input2(self, input2, data, employee_id):
+        query = self._UPDATE_INPUT2
+        cursor = self.connection.cursor()
+        cursor.execute(query, (input2, data, employee_id,))
+        self.connection.commit()
+        return f'sucesso {input2}'
+
+    def update_exit2(self, exit2, data, employee_id):
+        query = self._UPDATE_EXIT2
+        cursor = self.connection.cursor()
+        cursor.execute(query, (exit2, data, employee_id,))
+        self.connection.commit()
+        return f'sucesso {exit2}'

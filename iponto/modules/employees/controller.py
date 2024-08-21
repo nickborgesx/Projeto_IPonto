@@ -12,6 +12,7 @@ from iponto.modules.scale.dao import DAOScale
 
 employees_controller = Blueprint('employees_controller', __name__)
 dao_employees = DAOEmployees()
+dao_scale = DAOScale()
 dao_roles = DAORoles()
 dao_company = DAOCompany()
 module_name = 'employees'
@@ -176,42 +177,50 @@ INTERVALO = True
 def bater_ponto(id):
     token = request.headers.get('Authorization')
     auth_response = validate_token(token)
-
     if auth_response.status_code == 200:
-        today_date = datetime.now().strftime('%Y-%m-%d')
+        employee_id = id
+        # Captura automaticamente a data e hora local
+        data_e_hora_atual = datetime.now()
+        date_hoje = data_e_hora_atual.date().isoformat()
+        hora_atual = data_e_hora_atual.strftime("%H:%M")
 
-        employee = dao_employees.get_by_id(id)
-        if not employee:
-            return make_response({'error': f'Funcionário com ID {id} não encontrado'}, 404)
-
-        escala = dao_scale.get_by_employee_and_date(id, today_date)
-        if not escala:
-            return make_response({'error': 'Escala não encontrada para hoje'}, 404)
-
-        pontos = [escala.input1, escala.output1, escala.input2, escala.output2]
-        pontos_batidos = sum(1 for p in pontos if p is not None)
-
-        if pontos_batidos >= 4:
+    # Verifica se há uma escala para o funcionário na data atual
+        verificar_data = dao_scale.get_data_by_data_and_id(employee_id, date_hoje)
+        input1 = verificar_data.get('input1')
+        exit1 = verificar_data.get('exit1')
+        input2 = verificar_data.get('input2')
+        exit2 = verificar_data.get('exit2')
+        if input1 and input2 and exit1 and exit2 != None :
             return make_response({'error': 'Limite do dia já atingido'}, 400)
+        if verificar_data:
+            if verificar_data.get('input1') == None:
+                input1 = hora_atual
+                check_in = dao_scale.update_input1(input1=input1, data=date_hoje, employee_id=employee_id)
+                return jsonify(f'check-in = {check_in}'),200
+            elif verificar_data.get('exit1') == None:
+                input1 = verificar_data.get('input1')
+                ultima_hora = datetime.strptime(input1, '%H:%M')
+                atual_hora = datetime.strptime(hora_atual, '%H:%M')
+                if atual_hora < (ultima_hora + timedelta(hours=1)):
+                    return jsonify({"error": "Você não pode bater o ponto nesse momento, precisa de um intervalo de 1h entre os pontos"}), 400
+                check_out = dao_scale.update_exit1(exit1=hora_atual, data=date_hoje, employee_id=employee_id)
+                return jsonify(f'check-out = {check_out} '),200
 
-        now = datetime.now().strftime('%H:%M')
-
-        if INTERVALO:
-            ultimo_ponto = max([p for p in pontos if p is not None], default=None)
-            if ultimo_ponto:
-                ultimo_ponto_time = datetime.strptime(ultimo_ponto, '%H:%M')
-                agora_time = datetime.strptime(now, '%H:%M')
-                intervalo = agora_time - ultimo_ponto_time
-                if intervalo < timedelta(hours=2):
-                    return make_response({'error': 'Você não pode bate o ponto nesse momento, precisa de um intervalo de 2h entre os pontos'}, 400)
-
-        dao_scale.atualizar_ponto(escala, now)
-        dao_scale.salvar(escala)
-
-        return make_response({'message': 'Ponto registrado'}, 200)
-
+            elif verificar_data.get('input2') == None:
+                input2 = hora_atual
+                check_in = dao_scale.update_input2(input2=input2, data=date_hoje, employee_id=employee_id)
+                return jsonify(f'check-in = {check_in}'),200
+            elif verificar_data.get('exit2') == None:
+                input2 = verificar_data.get('input2')
+                ultima_hora = datetime.strptime(input2, '%H:%M')
+                atual_hora = datetime.strptime(hora_atual, '%H:%M')
+                if atual_hora < (ultima_hora + timedelta(hours=1)):
+                    return jsonify({"error": "Você não pode bater o ponto nesse momento, precisa de um intervalo de 1h entre os pontos"}), 400
+                check_out = dao_scale.update_exit2(exit2=hora_atual, data=date_hoje, employee_id=employee_id)
+                return jsonify(f'check-out = {check_out} '),200
+        return jsonify({"error": f"Não existe escala definida para o dia {date_hoje} para o funcionário {id}"}), 400
     elif auth_response.status_code == 401:
-        return make_response({'error': 'Token de autenticação inválido'}, 401)
+        return jsonify({'error': 'Token de autenticação inválido'}), 401
     else:
         return make_response(auth_response.text, auth_response.status_code)
 
