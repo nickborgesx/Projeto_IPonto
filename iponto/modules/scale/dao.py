@@ -117,3 +117,14 @@ class DAOScale(SQLScale):
         cursor.execute(query, (exit2, data, employee_id,))
         self.connection.commit()
         return f'sucesso {exit2}'
+
+    def get_input_and_exit(self,month, year, employee_id):
+        query = self._SELECT_INPUT_EXIT
+        cursor = self.connection.cursor()
+        cursor.execute(query, (month,year,employee_id))
+        result = cursor.fetchall()
+        if result:
+            scale_dict = result
+            return scale_dict
+        else:
+            return None

@@ -224,4 +224,62 @@ def bater_ponto(id):
     else:
         return make_response(auth_response.text, auth_response.status_code)
 
+@employees_controller.route('/api/v1/employee/<int:id>/hours/<int:month>/<int:year>', methods=['GET'])
+def consultar_horas(id, month, year):
+    token = request.headers.get('Authorization')
+    auth_response = validate_token(token)
+    if auth_response.status_code == 200:
 
+        employee_id = id
+        month = int(month)
+        year = int(year)
+        verificando_ponto = dao_scale.get_input_and_exit(month=month, year=year, employee_id=employee_id)
+        if verificando_ponto != None:
+            print(f'passou o na verificação{verificando_ponto}')
+            employee_hours = {}
+            for date in verificando_ponto:
+
+                print(f'no for {date}')
+                record = {
+                    "id": date[0],
+                    "date": date[1],
+                    "month": date[2],
+                    "year": date[3],
+                    "input1": date[4],
+                    "exit1": date[5],
+                    "input2": date[6],
+                    "exit2": date[7],
+                    "name": date[8]
+                }
+                print(f'record {record}')
+                # calculo das horas
+                total_horas_dia = timedelta()
+                if record['input1'] and record['exit1']:
+                    input1 = datetime.strptime(record['input1'], '%H:%M')
+                    exit1 = datetime.strptime(record['exit1'], '%H:%M')
+                    total_horas_dia += exit1 - input1
+                if record['input2'] and record['exit2']:
+                    input2 = datetime.strptime(record['input2'], '%H:%M')
+                    exit2 = datetime.strptime(record['exit2'], '%H:%M')
+                    total_horas_dia += exit2 - input2
+                # convetendo para str
+                total_horas_dia_str = str(total_horas_dia)
+                print(f'total de horas no dia {total_horas_dia_str}')
+                print(f'data {record["date"]}')
+                print(f'nome {record["name"]}')
+
+                #adiciona o nome do funcionario se ainda não tiver no dicionario
+                if record["name"] not in employee_hours:
+                    employee_hours[record["name"]] = {}
+                print(f'employee_hours {employee_hours}')
+                employee_hours[record["name"]][record["date"]] = total_horas_dia_str
+            json_result = json.dumps(employee_hours, indent=4, ensure_ascii=False)
+            print(f'json_result = {json_result}')
+
+            return make_response(json_result), 200
+        else:
+            return jsonify({"error": f"Não existe ponto para o mês {month:02}/{year}"}), 400
+    elif auth_response.status_code == 401:
+        return jsonify({'error': 'Token de autenticação inválido'}), 401
+    else:
+        return make_response(auth_response.text, auth_response.status_code)
