@@ -8,11 +8,10 @@ from iponto.modules.employees.modelo import Employees
 from iponto.modules.employees.sql import SQLEmployees
 from iponto.modules.roles.dao import DAORoles
 from iponto.modules.scale.controller import dao_scale
-from iponto.modules.scale.dao import DAOScale
+
 
 employees_controller = Blueprint('employees_controller', __name__)
 dao_employees = DAOEmployees()
-dao_scale = DAOScale()
 dao_roles = DAORoles()
 dao_company = DAOCompany()
 module_name = 'employees'
@@ -172,20 +171,22 @@ def editar_funcionario(id):
     else:
         return make_response(auth_response.text, auth_response.status_code)
 
-INTERVALO = True
 @employees_controller.route('/api/v1/employee/<int:id>/point', methods=['POST'])
 def bater_ponto(id):
     token = request.headers.get('Authorization')
     auth_response = validate_token(token)
     if auth_response.status_code == 200:
         employee_id = id
-        # Captura automaticamente a data e hora local
+
         data_e_hora_atual = datetime.now()
         date_hoje = data_e_hora_atual.date().isoformat()
         hora_atual = data_e_hora_atual.strftime("%H:%M")
 
-    # Verifica se há uma escala para o funcionário na data atual
         verificar_data = dao_scale.get_data_by_data_and_id(employee_id, date_hoje)
+
+        if verificar_data is None:
+            return jsonify({"error": "É necessário criar uma escala para o funcionário antes de bater o ponto."}), 400
+
         input1 = verificar_data.get('input1')
         exit1 = verificar_data.get('exit1')
         input2 = verificar_data.get('input2')
@@ -228,18 +229,21 @@ def bater_ponto(id):
 def consultar_horas(id, month, year):
     token = request.headers.get('Authorization')
     auth_response = validate_token(token)
+
     if auth_response.status_code == 200:
-
         employee_id = id
-        month = int(month)
-        year = int(year)
-        verificando_ponto = dao_scale.get_input_and_exit(month=month, year=year, employee_id=employee_id)
-        if verificando_ponto != None:
-            print(f'passou o na verificação{verificando_ponto}')
-            employee_hours = {}
-            for date in verificando_ponto:
 
-                print(f'no for {date}')
+        validar_id = dao_employees.get_by_id(id)
+        if not validar_id:
+            response = jsonify({"message": f"Funcionário não encontrado"})
+            return response
+
+        verificando_ponto = dao_scale.get_input_and_exit(month=month, year=year, employee_id=employee_id)
+
+        if verificando_ponto:
+            employee_hours = {}
+
+            for date in verificando_ponto:
                 record = {
                     "id": date[0],
                     "date": date[1],
@@ -251,8 +255,7 @@ def consultar_horas(id, month, year):
                     "exit2": date[7],
                     "name": date[8]
                 }
-                print(f'record {record}')
-                # calculo das horas
+
                 total_horas_dia = timedelta()
                 if record['input1'] and record['exit1']:
                     input1 = datetime.strptime(record['input1'], '%H:%M')
@@ -262,21 +265,16 @@ def consultar_horas(id, month, year):
                     input2 = datetime.strptime(record['input2'], '%H:%M')
                     exit2 = datetime.strptime(record['exit2'], '%H:%M')
                     total_horas_dia += exit2 - input2
-                # convetendo para str
-                total_horas_dia_str = str(total_horas_dia)
-                print(f'total de horas no dia {total_horas_dia_str}')
-                print(f'data {record["date"]}')
-                print(f'nome {record["name"]}')
 
-                #adiciona o nome do funcionario se ainda não tiver no dicionario
+                total_horas_dia_str = str(total_horas_dia)
                 if record["name"] not in employee_hours:
                     employee_hours[record["name"]] = {}
-                print(f'employee_hours {employee_hours}')
-                employee_hours[record["name"]][record["date"]] = total_horas_dia_str
-            json_result = json.dumps(employee_hours, indent=4, ensure_ascii=False)
-            print(f'json_result = {json_result}')
 
-            return make_response(json_result), 200
+                employee_hours[record["name"]][record["date"]] = total_horas_dia_str
+            return jsonify(employee_hours), 200
+
+        elif verificando_ponto == None:
+            return jsonify({'error': 'Funcionário não possui horas cadastrada nesse mês'}), 400
         else:
             return jsonify({"error": f"Não existe ponto para o mês {month:02}/{year}"}), 400
     elif auth_response.status_code == 401:
