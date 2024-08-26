@@ -2,6 +2,8 @@
 
 Este projeto consiste em uma API desenvolvida para gerenciar pontos eletrônicos de funcionários em relação a escala de trabalho. Ele está dividido em dois componentes principais: iPonto e msAuthentication. Cada componente possui suas funcionalidades específicas e está organizado de forma modular, permitindo uma fácil manutenção e expansão.
 
+![Ilustração do SQL](drawsql.png)
+
 ### Módulo Company (Empresa)
 Função: Gerencia as empresas registradas no sistema.
 
@@ -26,7 +28,7 @@ Função: Gerencia os funcionários da empresa.
 Exemplo de JSON:
 {
   "name": "Nicolas Borges",
-  "cpf": "000.000.000-00
+  "cpf": "000.000.000-00,
   "role_id": "Developer", #Necessário ter um role cadastrado.
   "company_id": 1
 }
@@ -51,11 +53,6 @@ Descrição: Este endpoint edita os dados do funcionário.
 Função: Gerencia os cargos disponíveis para os funcionários.
 
 - Endpoint: POST /api/v1/role
-
-Exemplo de JSON:
-{
-  "title": "Developer"
-}
 
 Descrição: Este endpoint cria um novo cargo no sistema.
 
@@ -111,3 +108,4 @@ Descrição: Este endpoint permite que o usuário faça login e obtenha um token
 - PostgreSQL
 - Postman
 - pyjwt
+- drawsql
