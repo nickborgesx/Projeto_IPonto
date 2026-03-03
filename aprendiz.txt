@@ -1,0 +1,47 @@
+Caso você seja iniciante, mostrarei um passo a passo completo para utilizá-lo:
+
+   1. Instale os pacotes necessários
+    Ao abrir o arquivo em sua IDE, instale as dependências executando o comando abaixo no terminal:
+    bash
+
+    pip install -r requirements.txt
+
+    2. Configure os bancos de dados no PostgreSQL
+    Abra o PostgreSQL e crie dois bancos de dados com os seguintes nomes:
+
+        - iponto
+
+        - authentication
+
+    3. Crie um usuário no banco authentication
+    Insira manualmente um usuário na tabela correspondente, com username e password.
+    Exemplo:
+
+        - username: admin
+
+        - password: admin
+
+    4. Execute as aplicações
+    Inicie os dois apps em terminais separados.
+
+    5. Gere o token de autenticação
+    Utilize o Postman (ou qualquer outro cliente API) para fazer uma requisição POST para o endpoint:
+    text
+
+    /api/v1/authentication/token/
+
+    No corpo da requisição (body), envie um JSON com as credenciais criadas:
+    json
+
+    {
+        "username": "admin",
+        "password": "admin"
+    }
+
+    A resposta conterá um token de acesso.
+
+    6. Utilize o token nas demais requisições
+    Para acessar os outros endpoints da API (relacionados ao banco iponto), inclua o token no cabeçalho da requisição utilizando o tipo Bearer Token.
+    Exemplo de cabeçalho:
+    Authorization: Bearer <seu_token_aqui>
+
